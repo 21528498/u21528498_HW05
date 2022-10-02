@@ -1,0 +1,119 @@
+﻿@model u21528498_HW05.ViewModels.BooksVM
+@using u21528498_HW05.Models
+@{
+    ViewBag.Title = "StudentIndex";
+}
+
+<h2>StudentIndex</h2>
+<script>
+    function toggleAdvanced()
+    {
+        if (document.getElementById("advancedDiv").classList.contains("hiddenDiv"))
+        {
+            document.getElementById("advancedDiv").classList.remove('hiddenDiv');
+            document.getElementById("advancedDiv").style.display = "block";
+            document.getElementById("advancedBtn").innerText = "Close";
+        }
+        else
+        {
+            document.getElementById("advancedDiv").classList.add('hiddenDiv');
+            document.getElementById("advancedDiv").style.display = "none";
+            document.getElementById("advancedBtn").innerText = "Advanced Search";
+        }
+
+    }
+</script>
+
+@if (ViewBag.Status != 0)
+{
+    <div class="row crudContainer">
+        <h1>Students</h1>
+        @using (Html.BeginForm("ComplexSearch", "Home", FormMethod.Post, new { style = "width:100%" }))
+        {
+
+            List<SelectListItem> listItems1 = new List<SelectListItem>();
+            listItems1.Add(new SelectListItem
+            {
+                Text = "Select a Type",
+                Value = "NADA",
+                Selected = true
+            });
+
+            foreach (string item in Model.types)
+            {
+                listItems1.Add(new SelectListItem
+                {
+                    Text = item,
+                    Value = item,
+                    Selected = true
+                });
+            }
+
+
+            <table class="table">
+                <tr>
+                    <th style="width:20%"><input type="text" style="max-width:none; display:flex" name="searchText" class="form-control" placeholder="Search" /></th>
+                    <th style="width:20%;">@Html.DropDownList("className", new SelectList(listItems1, "Value", "Text"), new { @class = "form-control", style = "display:flex;" })</th>
+
+                    <th style="width:10%"><button type="submit" class="btn btn-success">Search</button></th>
+                    @{
+                        int temp = (int)Session["BookID"];
+                    }
+                    <th style="width:10%">@Html.ActionLink("Clear", "StudentIndex", "Home", new { bookId = temp }, new { @class = "btn btn-danger" })</th>
+
+                </tr>
+            </table>
+
+        }
+
+
+        <table class="table">
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Surname</th>
+                <th>Class</th>
+                <th>Points</th>
+                @{
+                    if ((int)Session["BookedStu"] == -1)
+                    {
+                        <th>Borrow Book</th>
+                    }
+                    else
+                    {
+                        <th>Return Book</th>
+                    }
+                }
+
+
+
+            </tr>
+            @foreach (Students student in Model.students)
+            {
+                <tr>
+                    <td>@student.StudentId</td>
+                    <td>@student.stuName</td>
+                    <td>@student.stuSurname</td>
+                    <td>@student.stuClass</td>
+                    <td>@student.point</td>
+                    @{
+                        if ((int)Session["BookedStu"] == -1)
+                        {
+                            <td>@Html.ActionLink("Borrow Book", "GetBook", "Home", new { studentId = student.StudentId }, null) </td>
+                        }
+                        else
+                        {
+                            if (student.StudentId == (int)Session["BookedStu"])
+                            {
+                                <td>@Html.ActionLink("Return Book", "ReturnBook", "Home", new { studentId = student.StudentId }, null) </td>
+                            }
+                        }
+                    }
+                   
+
+                </tr>
+            }
+        </table>
+    </div>
+}
+

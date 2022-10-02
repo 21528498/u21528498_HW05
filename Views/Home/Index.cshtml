@@ -1,0 +1,120 @@
+﻿@model u21528498_HW05.ViewModels.AuthorVM
+@using u21528498_HW05.Models
+
+
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<script>
+    function toggleAdvanced() {
+        if (document.getElementById("advancedDiv").classList.contains("hiddenDiv")) {
+            document.getElementById("advancedDiv").classList.remove('hiddenDiv');
+            document.getElementById("advancedDiv").style.display = "block";
+            document.getElementById("advancedBtn").innerText = "Close";
+        }
+        else {
+            document.getElementById("advancedDiv").classList.add('hiddenDiv');
+            document.getElementById("advancedDiv").style.display = "none";
+            document.getElementById("advancedBtn").innerText = "Advanced Search";
+        }
+
+    }
+</script>
+@if (ViewBag.Status != 0)
+{
+    <div class="row crudContainer">
+        <h1>Books</h1>
+        @using (Html.BeginForm("ComplexSearch", "Home", FormMethod.Post, new { style = "width:100%" }))
+        {
+
+            List<SelectListItem> listItems1 = new List<SelectListItem>();
+            listItems1.Add(new SelectListItem
+            {
+                Text = "Select a Type",
+                Value = "NADA",
+                Selected = true
+            });
+
+            foreach (string item in Model.types)
+            {
+                listItems1.Add(new SelectListItem
+                {
+                    Text = item,
+                    Value = item,
+                    Selected = true
+                });
+            }
+
+            //for the Authors
+            List<SelectListItem> listItems2 = new List<SelectListItem>();
+            listItems2.Add(new SelectListItem
+            {
+                Text = "Select an Author",
+                Value = "NADA",
+                Selected = true
+            });
+
+            foreach (string item in Model.authors)
+            {
+                listItems2.Add(new SelectListItem
+                {
+                    Text = item,
+                    Value = item,
+                    Selected = true
+                });
+            }
+            <table class="table">
+                <tr>
+                    <th style="width:20%"><input type="text" style="max-width:none; display:flex" name="searchText" class="form-control" placeholder="Search" /></th>
+                    <th style="width:20%;">@Html.DropDownList("type", new SelectList(listItems1, "Value", "Text"), new { @class = "form-control", style = "display:flex;" })</th>
+                    <th style="width:20%">@Html.DropDownList("author", new SelectList(listItems2, "Value", "Text"), new { @class = "form-control", style = "display:flex;" })</th>
+                    <th style="width:10%"><button type="submit" onclick="location.href='@Url.Action("Index","Home") '" class="btn btn-success">Search</button></th>
+                    <th style="width:10%"><button type="button" onclick="location.href='@Url.Action("Index","Home") '" class="btn btn-danger">Clear</button></th>
+
+                </tr>
+            </table>
+
+        }
+
+
+
+
+        <table class="table">
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Author</th>
+                <th>Type</th>
+                <th>Page Count</th>
+                <th>Points</th>
+                <th>Status</th>
+
+            </tr>
+            @foreach (Books book in Model.books)
+            {
+                <tr>
+                    <td>@book.bookID</td>
+                    <td>@book.Name</td>
+                    <td>@book.AuthorSurname</td>
+                    <td>@book.type</td>
+                    <td>@book.pageCount</td>
+                    <td>@book.point</td>
+                    @{ if (book.status == "Available")
+                        {
+                            <td style="color: green">@book.status</td>
+                        }
+                        else
+                        {
+                            <td style="color: red">@book.status</td>
+                        }
+
+                    }
+                    <td>@Html.ActionLink("View", "BookIndex", "Home", new { bookId = @book.bookID }, new { @class = "btn btn-primary" }) </td>
+                </tr>
+            }
+        </table>
+    </div>
+}
+
+
